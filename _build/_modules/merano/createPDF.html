@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>merano.createPDF &#8212; MerAnO 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for merano.createPDF</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/python</span>
+<span class="c1">#-*- coding: utf-8 -*-</span>
+
+<span class="c1">### Import</span>
+
+<span class="kn">from</span> <span class="nn">reportlab.lib.pagesizes</span> <span class="kn">import</span> <span class="n">A4</span>
+<span class="kn">from</span> <span class="nn">reportlab.lib.units</span> <span class="kn">import</span> <span class="n">cm</span>
+<span class="kn">from</span> <span class="nn">reportlab.platypus</span> <span class="kn">import</span> <span class="n">Paragraph</span><span class="p">,</span> <span class="n">SimpleDocTemplate</span><span class="p">,</span> <span class="n">Spacer</span>
+<span class="kn">from</span> <span class="nn">reportlab.lib.styles</span> <span class="kn">import</span> <span class="n">getSampleStyleSheet</span>
+<span class="kn">from</span> <span class="nn">reportlab.lib.styles</span> <span class="kn">import</span> <span class="n">ParagraphStyle</span>
+<span class="kn">from</span> <span class="nn">reportlab.platypus</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span> <span class="nn">reportlab.platypus</span> <span class="kn">import</span> <span class="n">PageBreak</span>
+
+
+
+
+<div class="viewcode-block" id="create_pdf"><a class="viewcode-back" href="../../api.html#merano.createPDF.create_pdf">[docs]</a><span class="k">def</span> <span class="nf">create_pdf</span><span class="p">(</span><span class="n">charts</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a pdf file with all charts</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        charts (list) : contain path and description for all charts</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">styles</span> <span class="o">=</span> <span class="n">getSampleStyleSheet</span><span class="p">()</span>
+    <span class="n">stylesN</span> <span class="o">=</span> <span class="n">styles</span><span class="p">[</span><span class="s1">&#39;Normal&#39;</span><span class="p">]</span>
+    <span class="n">stylesH</span> <span class="o">=</span> <span class="n">styles</span><span class="p">[</span><span class="s1">&#39;Heading1&#39;</span><span class="p">]</span>
+    <span class="n">stylesT</span> <span class="o">=</span> <span class="n">ParagraphStyle</span><span class="p">(</span>
+    <span class="s1">&#39;T&#39;</span><span class="p">,</span>
+    <span class="n">parent</span><span class="o">=</span><span class="n">styles</span><span class="p">[</span><span class="s1">&#39;Title&#39;</span><span class="p">],</span>
+    <span class="n">fontSize</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span>
+    <span class="n">leading</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">textColor</span><span class="o">=</span><span class="s1">&#39;#3F9ED5 &#39;</span>
+
+    <span class="p">)</span>
+
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">SimpleDocTemplate</span><span class="p">(</span><span class="s2">&quot;./Results/Report.pdf&quot;</span><span class="p">,</span> <span class="n">pagesize</span><span class="o">=</span><span class="n">A4</span><span class="p">)</span>
+
+
+    <span class="n">text</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Paragraph</span><span class="p">(</span><span class="s2">&quot;Analyses of organism&#39;s pathways&quot;</span><span class="p">,</span> <span class="n">stylesT</span><span class="p">))</span>
+    <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Spacer</span><span class="p">(</span><span class="mi">0</span><span class="o">*</span><span class="n">cm</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="n">cm</span><span class="p">))</span>
+    <span class="n">comparison</span><span class="o">=</span><span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">charts</span><span class="p">)):</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">charts</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">i</span><span class="o">%</span><span class="mi">2</span><span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">title</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">2</span><span class="p">:</span>
+            <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Paragraph</span><span class="p">(</span><span class="n">title</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39; &#39;</span> <span class="o">+</span><span class="n">title</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">stylesH</span><span class="p">))</span>
+            <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Spacer</span><span class="p">(</span><span class="mi">0</span><span class="o">*</span><span class="n">cm</span><span class="p">,</span><span class="mf">0.5</span><span class="o">*</span><span class="n">cm</span><span class="p">))</span>
+            <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Paragraph</span><span class="p">(</span><span class="s1">&#39;Description : &#39;</span> <span class="o">+</span> <span class="n">charts</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">stylesN</span><span class="p">))</span>
+            <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Spacer</span><span class="p">(</span><span class="mi">0</span><span class="o">*</span><span class="n">cm</span><span class="p">,</span><span class="mf">0.5</span><span class="o">*</span><span class="n">cm</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">i</span><span class="o">%</span><span class="mi">2</span><span class="o">!=</span><span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">title</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">2</span><span class="p">:</span>
+            <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Paragraph</span><span class="p">(</span><span class="s1">&#39;Description : &#39;</span> <span class="o">+</span> <span class="n">charts</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">stylesN</span><span class="p">))</span>
+            <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Spacer</span><span class="p">(</span><span class="mi">0</span><span class="o">*</span><span class="n">cm</span><span class="p">,</span><span class="mf">0.5</span><span class="o">*</span><span class="n">cm</span><span class="p">))</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">comparison</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Paragraph</span><span class="p">(</span><span class="s1">&#39;Comparison&#39;</span><span class="p">,</span> <span class="n">stylesH</span><span class="p">))</span>
+                <span class="n">comparison</span><span class="o">=</span><span class="mi">1</span>
+            <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Paragraph</span><span class="p">(</span><span class="n">charts</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">stylesN</span><span class="p">))</span>
+            <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Spacer</span><span class="p">(</span><span class="mi">0</span><span class="o">*</span><span class="n">cm</span><span class="p">,</span><span class="mf">0.5</span><span class="o">*</span><span class="n">cm</span><span class="p">))</span>
+        <span class="n">path</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;./Results/&#39;</span><span class="o">+</span><span class="n">charts</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        
+        <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">500</span><span class="p">))</span>
+        <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PageBreak</span><span class="p">())</span>
+
+
+
+
+    <span class="n">doc</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Ancelle, Barus, Borg, Mathez, Paardekooper.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

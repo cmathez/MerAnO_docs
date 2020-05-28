@@ -1,0 +1,325 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>merano.merge_SBML &#8212; MerAnO 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for merano.merge_SBML</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">libsbml</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c1">### Step 1 : Get document and model</span>
+
+<div class="viewcode-block" id="read_sbml"><a class="viewcode-back" href="../../api.html#merano.merge_SBML.read_sbml">[docs]</a><span class="k">def</span> <span class="nf">read_sbml</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot; return model of SBML file.</span>
+<span class="sd">  </span>
+<span class="sd">  :param file: name of one file &quot;path/name.xml&quot;.</span>
+<span class="sd">  :type file: str</span>
+
+<span class="sd">  :returns: the SBMLDocument in the file.</span>
+<span class="sd">  :rtype: libsbml.SBMLDocument</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">document</span> <span class="o">=</span> <span class="n">libsbml</span><span class="o">.</span><span class="n">readSBML</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+  <span class="k">if</span> <span class="n">document</span><span class="o">.</span><span class="n">getNumErrors</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR : </span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\&quot;</span><span class="s1"> is not SBML file&#39;</span><span class="p">)</span>
+    <span class="n">document</span><span class="o">.</span><span class="n">printErrors</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+  <span class="k">else</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">document</span></div>
+      
+<div class="viewcode-block" id="get_model"><a class="viewcode-back" href="../../api.html#merano.merge_SBML.get_model">[docs]</a><span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span><span class="n">document</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot; get the model from the SBMLDocument.</span>
+
+<span class="sd">  :param document: a sbml document.</span>
+<span class="sd">  :type document: libsbml.SBMLDocument</span>
+
+<span class="sd">  :returns: the model from the SBMLDocument.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">model</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">getModel</span><span class="p">()</span>
+  <span class="k">return</span> <span class="n">model</span></div>
+
+<span class="c1">## Step 2 : Define Id for one organism</span>
+
+<div class="viewcode-block" id="get_Id_organism"><a class="viewcode-back" href="../../api.html#merano.merge_SBML.get_Id_organism">[docs]</a><span class="k">def</span> <span class="nf">get_Id_organism</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot; get the ID of the organism from the model.</span>
+
+<span class="sd">  :param model: the model of an sbml document.</span>
+
+<span class="sd">  :returns: ID of the organism.</span>
+<span class="sd">  :rtype: str</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">Id</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">getId</span><span class="p">()</span>
+  <span class="k">return</span> <span class="n">Id</span></div>
+
+<span class="c1">## Step 3 :  Get each object</span>
+
+<div class="viewcode-block" id="get_ListOfFunctionDefinitions"><a class="viewcode-back" href="../../api.html#merano.merge_SBML.get_ListOfFunctionDefinitions">[docs]</a><span class="k">def</span> <span class="nf">get_ListOfFunctionDefinitions</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot; get the component ListOfFunctionDefinitions from the model.</span>
+
+<span class="sd">  :param model: the model of an sbml document.</span>
+
+<span class="sd">  :returns: component ListOfFunctionDefinition from the model.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">ListOfFunctionDefinitions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">getListOfFunctionDefinitions</span><span class="p">()</span>
+  <span class="k">return</span> <span class="n">ListOfFunctionDefinitions</span></div>
+
+<div class="viewcode-block" id="get_ListOfUnitDefinitions"><a class="viewcode-back" href="../../api.html#merano.merge_SBML.get_ListOfUnitDefinitions">[docs]</a><span class="k">def</span> <span class="nf">get_ListOfUnitDefinitions</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot; get the component ListOfUnitDefinitions from the model.</span>
+
+<span class="sd">  :param model: the model of an sbml document.</span>
+
+<span class="sd">  :returns: component ListOfUnitDefinitions from the model.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">getListOfUnitDefinitions</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="get_ListOfCompartments"><a class="viewcode-back" href="../../api.html#merano.merge_SBML.get_ListOfCompartments">[docs]</a><span class="k">def</span> <span class="nf">get_ListOfCompartments</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot; get the component ListOfCompartments from the model.</span>
+
+<span class="sd">  :param model: the model of an sbml document.</span>
+
+<span class="sd">  :returns: component ListOfCompartments from the model.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">ListOfCompartments</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">getListOfCompartments</span><span class="p">()</span>
+  <span class="k">return</span> <span class="n">ListOfCompartments</span></div>
+
+<div class="viewcode-block" id="get_listOfSpecies"><a class="viewcode-back" href="../../api.html#merano.merge_SBML.get_listOfSpecies">[docs]</a><span class="k">def</span> <span class="nf">get_listOfSpecies</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot; get the component ListOfSpecies from the model.</span>
+
+<span class="sd">  :param model: the model of an sbml document.</span>
+
+<span class="sd">  :returns: component ListOfSpecies from the model.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">ListOfSpecies</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">getListOfSpecies</span><span class="p">()</span>
+  <span class="k">return</span> <span class="n">ListOfSpecies</span></div>
+
+<div class="viewcode-block" id="get_ListOfParameters"><a class="viewcode-back" href="../../api.html#merano.merge_SBML.get_ListOfParameters">[docs]</a><span class="k">def</span> <span class="nf">get_ListOfParameters</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot; get the component ListOfParameters from the model.</span>
+
+<span class="sd">  :param model: the model of an sbml document.</span>
+
+<span class="sd">  :returns: component ListOfParameters from the model.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">ListOfParameters</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">getListOfParameters</span><span class="p">()</span>
+  <span class="k">return</span> <span class="n">ListOfParameters</span></div>
+
+<div class="viewcode-block" id="get_ListOfReactions"><a class="viewcode-back" href="../../api.html#merano.merge_SBML.get_ListOfReactions">[docs]</a><span class="k">def</span> <span class="nf">get_ListOfReactions</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot; get the component ListOfReactions from the model.</span>
+
+<span class="sd">  :param model: the model of an sbml document.</span>
+
+<span class="sd">  :returns: component ListOfReactions from the model.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">ListOfReactions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">getListOfReactions</span><span class="p">()</span>
+  <span class="k">return</span> <span class="n">ListOfReactions</span></div>
+  
+<span class="c1">#def get_ListOfReactants(model):</span>
+<span class="c1">#    ListOfReactants = model.getListOfReactants()</span>
+<span class="c1">#    return ListOfReactants</span>
+
+<span class="c1">#def get_ListOfProducts(model):</span>
+<span class="c1">#    ListOfProducts = model.getListOfProducts()</span>
+<span class="c1">#    return ListOfProducts</span>
+
+<span class="c1">## Step 4 : Modify Id in a model</span>
+
+<div class="viewcode-block" id="shorten_Id"><a class="viewcode-back" href="../../api.html#merano.merge_SBML.shorten_Id">[docs]</a><span class="k">def</span> <span class="nf">shorten_Id</span><span class="p">(</span><span class="n">Id</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot; selects the end ID of the ID of the organism to make ID shorter.</span>
+
+<span class="sd">  :param Id: Id of the organism.</span>
+<span class="sd">  :type Id: str</span>
+
+<span class="sd">  :returns: the end of the organism&#39;s ID.</span>
+<span class="sd">  :rtype: str</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">IdList</span> <span class="o">=</span> <span class="n">Id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+  <span class="n">Id</span> <span class="o">=</span> <span class="n">IdList</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+  <span class="k">return</span> <span class="n">Id</span></div>
+
+<div class="viewcode-block" id="set_UnitDefinitionIds"><a class="viewcode-back" href="../../api.html#merano.merge_SBML.set_UnitDefinitionIds">[docs]</a><span class="k">def</span> <span class="nf">set_UnitDefinitionIds</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">ShortIdOrganism</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot; changes the ID of the component UnitDefinition.</span>
+
+<span class="sd">  :param model: the model of an sbml document.</span>
+<span class="sd">  :param ShortIdOrganism: a short Id.</span>
+<span class="sd">  :type ShortIdOrganism: str</span>
+
+<span class="sd">  :returns: the model with new ID of component UnitDefinition.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">ListOfUnitDefinitions</span> <span class="o">=</span> <span class="n">get_ListOfUnitDefinitions</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">unitDefinition</span> <span class="ow">in</span> <span class="n">ListOfUnitDefinitions</span><span class="p">:</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">unitDefinition</span><span class="o">.</span><span class="n">getIdAttribute</span><span class="p">()</span>
+    <span class="n">newId</span> <span class="o">=</span> <span class="nb">id</span><span class="o">+</span><span class="s2">&quot;_&quot;</span><span class="o">+</span><span class="n">ShortIdOrganism</span>
+    <span class="n">unitDefinition</span><span class="o">.</span><span class="n">setIdAttribute</span><span class="p">(</span><span class="n">newId</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">model</span></div>
+
+<div class="viewcode-block" id="set_CompartmentIds"><a class="viewcode-back" href="../../api.html#merano.merge_SBML.set_CompartmentIds">[docs]</a><span class="k">def</span> <span class="nf">set_CompartmentIds</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">ShortIdOrganism</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot; changes the ID of the component Compartment.</span>
+
+<span class="sd">  :param model: the model of an sbml document.</span>
+<span class="sd">  :param ShortIdOrganism: a short Id.</span>
+<span class="sd">  :type ShortIdOrganism: str</span>
+
+<span class="sd">  :returns: the model with new ID of component Compartment.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">ListOfCompartments</span> <span class="o">=</span> <span class="n">get_ListOfCompartments</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">compartment</span> <span class="ow">in</span> <span class="n">ListOfCompartments</span><span class="p">:</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">compartment</span><span class="o">.</span><span class="n">getIdAttribute</span><span class="p">()</span>
+    <span class="n">newId</span> <span class="o">=</span> <span class="nb">id</span><span class="o">+</span><span class="s2">&quot;_&quot;</span><span class="o">+</span><span class="n">ShortIdOrganism</span>
+    <span class="n">compartment</span><span class="o">.</span><span class="n">setIdAttribute</span><span class="p">(</span><span class="n">newId</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">model</span></div>
+
+<div class="viewcode-block" id="set_SpeciesIds"><a class="viewcode-back" href="../../api.html#merano.merge_SBML.set_SpeciesIds">[docs]</a><span class="k">def</span> <span class="nf">set_SpeciesIds</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">ShortIdOrganism</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot; changes the ID of the component Species.</span>
+
+<span class="sd">  :param model: the model of an sbml document.</span>
+<span class="sd">  :param ShortIdOrganism: a short Id.</span>
+<span class="sd">  :type ShortIdOrganism: str</span>
+
+<span class="sd">  :returns: the model with new ID of component Species.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">ListOfSpecies</span> <span class="o">=</span> <span class="n">get_listOfSpecies</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">species</span> <span class="ow">in</span> <span class="n">ListOfSpecies</span><span class="p">:</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">species</span><span class="o">.</span><span class="n">getIdAttribute</span><span class="p">()</span>
+    <span class="n">newId</span> <span class="o">=</span> <span class="nb">id</span><span class="o">+</span><span class="s2">&quot;_&quot;</span><span class="o">+</span><span class="n">ShortIdOrganism</span>
+    <span class="n">species</span><span class="o">.</span><span class="n">setIdAttribute</span><span class="p">(</span><span class="n">newId</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">model</span></div>
+
+<div class="viewcode-block" id="set_ParameterIds"><a class="viewcode-back" href="../../api.html#merano.merge_SBML.set_ParameterIds">[docs]</a><span class="k">def</span> <span class="nf">set_ParameterIds</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">ShortIdOrganism</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot; changes the ID of the component Parameter.</span>
+
+<span class="sd">  :param model: the model of an sbml document.</span>
+<span class="sd">  :param ShortIdOrganism: a short Id.</span>
+<span class="sd">  :type ShortIdOrganism: str</span>
+
+<span class="sd">  :returns: the model with new ID of component Parameter.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">ListOfParameters</span> <span class="o">=</span> <span class="n">get_ListOfParameters</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="n">ListOfParameters</span><span class="p">:</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">parameter</span><span class="o">.</span><span class="n">getIdAttribute</span><span class="p">()</span>
+    <span class="n">newId</span> <span class="o">=</span> <span class="nb">id</span><span class="o">+</span><span class="s2">&quot;_&quot;</span><span class="o">+</span><span class="n">ShortIdOrganism</span>
+    <span class="n">parameter</span><span class="o">.</span><span class="n">setIdAttribute</span><span class="p">(</span><span class="n">newId</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">model</span></div>
+
+<div class="viewcode-block" id="set_ReactionsIds"><a class="viewcode-back" href="../../api.html#merano.merge_SBML.set_ReactionsIds">[docs]</a><span class="k">def</span> <span class="nf">set_ReactionsIds</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">ShortIdOrganism</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot; changes the ID of the component Reactions.</span>
+
+<span class="sd">  :param model: the model of an sbml document.</span>
+<span class="sd">  :param ShortIdOrganism: a short Id.</span>
+<span class="sd">  :type ShortIdOrganism: str</span>
+
+<span class="sd">  :returns: the model with new ID of component Reactions.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">ListOfReactions</span> <span class="o">=</span> <span class="n">get_ListOfReactions</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">reaction</span> <span class="ow">in</span> <span class="n">ListOfReactions</span><span class="p">:</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">reaction</span><span class="o">.</span><span class="n">getIdAttribute</span><span class="p">()</span>
+    <span class="n">newId</span> <span class="o">=</span> <span class="nb">id</span><span class="o">+</span><span class="s2">&quot;_&quot;</span><span class="o">+</span><span class="n">ShortIdOrganism</span>
+    <span class="n">reaction</span><span class="o">.</span><span class="n">setIdAttribute</span><span class="p">(</span><span class="n">newId</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">model</span></div>
+
+<div class="viewcode-block" id="modify_Id"><a class="viewcode-back" href="../../api.html#merano.merge_SBML.modify_Id">[docs]</a><span class="k">def</span> <span class="nf">modify_Id</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot; modify the IDs af all components in model.</span>
+
+<span class="sd">  :param model: the model of an sbml document.</span>
+
+<span class="sd">  :returns: the model with new IDs for each component.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">Id</span> <span class="o">=</span> <span class="n">get_Id_organism</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+  <span class="n">ShortId</span> <span class="o">=</span> <span class="n">shorten_Id</span><span class="p">(</span><span class="n">Id</span><span class="p">)</span>
+  <span class="n">model</span> <span class="o">=</span> <span class="n">set_UnitDefinitionIds</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">ShortId</span><span class="p">)</span>
+  <span class="n">model</span> <span class="o">=</span> <span class="n">set_CompartmentIds</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">ShortId</span><span class="p">)</span>
+  <span class="n">model</span> <span class="o">=</span> <span class="n">set_SpeciesIds</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">ShortId</span><span class="p">)</span>
+  <span class="n">model</span> <span class="o">=</span> <span class="n">set_ParameterIds</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">ShortId</span><span class="p">)</span>
+  <span class="n">model</span> <span class="o">=</span> <span class="n">set_ReactionsIds</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">ShortId</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">model</span></div>
+
+<span class="c1">## Step 5 : Create new SBML to merge all documents</span>
+
+<span class="kn">from</span> <span class="nn">libsbml</span> <span class="kn">import</span> <span class="o">*</span>
+
+<div class="viewcode-block" id="main_sbml"><a class="viewcode-back" href="../../api.html#merano.merge_SBML.main_sbml">[docs]</a><span class="k">def</span> <span class="nf">main_sbml</span><span class="p">(</span><span class="n">fileList</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot; create one SBML document with all organisms given by user.</span>
+
+<span class="sd">  :param fileList: a list with files</span>
+<span class="sd">  :type fileList: list</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Execution in progress ...&quot;</span><span class="p">)</span>
+  
+  <span class="n">document</span><span class="o">=</span><span class="n">SBMLDocument</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+  <span class="n">model</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">createModel</span><span class="p">(</span><span class="s2">&quot;merged_file&quot;</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">fileList</span><span class="p">:</span>
+    <span class="n">file</span> <span class="o">=</span> <span class="n">read_sbml</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">fileModel</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+    <span class="n">fileModel</span> <span class="o">=</span> <span class="n">modify_Id</span><span class="p">(</span><span class="n">fileModel</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">appendFrom</span><span class="p">(</span><span class="n">fileModel</span><span class="p">)</span>
+  <span class="n">writeSBML</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="s2">&quot;Results/merged_sbml.xml&quot;</span><span class="p">)</span></div>
+
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Ancelle, Barus, Borg, Mathez, Paardekooper.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
